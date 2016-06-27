@@ -20,15 +20,15 @@ function signInRouter (User) {
 			});
 		});
 
-	signInRouter.route('/login')
-		.post(function (req, res) {
+	signInRouter.route('/login/:email/:password')
+		.get(function (req, res) {
 			var filter = {
-				email: req.body.email
+				email: req.params.email
 			}
 			User.findOne(filter, function (err, user) {
 				if (!user) {
 					res.status(404).send('email does not exist');
-				} else if (req.body.password !== user.password) {
+				} else if (req.params.password !== user.password) {
 					res.status(401).send('forgot your password, mate?');
 				} else {
 					user.password = undefined;
