@@ -1,5 +1,6 @@
 var socket = function (io, User) {
 	io.on('connection', function (socket) {
+		console.log('connected');
 		socket.on('message', function (data) {
 			var fromUser;
 			var filter = {
@@ -37,13 +38,17 @@ var socket = function (io, User) {
 				}
 				if (i === toUser.chats.length) {
 					fromUser.password = undefined;
-					toUser.chats.push({
+					var chat = {
 		                user: fromUser,
 		                messages: [{
 							from: data.from,
 							message: data.msg
 						}]
-	                });
+	                };
+					toUser.chats.push(chat);
+					socket.broadcast.to(data.to).emit('new chat', {
+						chat: chat
+					});
 				}
 	        	toUser.save(function (err) {
 	        		//TODO
