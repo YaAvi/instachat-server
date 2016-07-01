@@ -1,6 +1,5 @@
 var socket = function (io, User) {
 	io.on('connection', function (socket) {
-		console.log('connected');
 		socket.on('message', function (data) {
 			var fromUser;
 			var filter = {

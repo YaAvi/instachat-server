@@ -1,56 +1,16 @@
 function signInRouter (User) {
 	var express = require('express'),
-		signInRouter = express.Router();
+		signInRouter = express.Router(),
+		signInController = require('../controllers/signInController')(User);
 
 	signInRouter.route('/register')
-		.post(function (req, res) {
-			var filter = {
-				email: req.body.email
-			}
-			User.findOne(filter, function (err, user) {
-				if (user) {
-					res.status(409).send('email already in system');
-				} else {
-					var user = new User(req.body);
-					user.save(function(err, savedUser){
-						user.password = undefined;
-						res.status(201).send(savedUser);
-					});
-				}
-			});
-		});
+		.post(signInController.register);
 
 	signInRouter.route('/login/:email/:password')
-		.get(function (req, res) {
-			var filter = {
-				email: req.params.email
-			}
-			User.findOne(filter, function (err, user) {
-				if (!user) {
-					res.status(404).send('email does not exist');
-				} else if (req.params.password !== user.password) {
-					res.status(401).send('forgot your password, mate?');
-				} else {
-					user.password = undefined;
-					res.status(201).send(user);
-				}
-			});
-		});
+		.get(signInController.login);
 
 	signInRouter.route('/autoLogin/:email')
-		.get(function (req, res) {
-			var filter = {
-				email: req.params.email
-			}
-			User.findOne(filter, function (err, user) {
-				if (!user) {
-					res.status(404).send('email does not exist');
-				} else {
-					user.password = undefined;
-					res.status(201).send(user);
-				}
-			});
-		});
+		.get(signInController.autoLogin);
 
 	return signInRouter;
 }

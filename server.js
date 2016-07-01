@@ -25,4 +25,3 @@ var server = app.listen(port, function () {
 
 var io = require('socket.io')(server),
 	ioInitiated = require('./socket.config')(io, User);
-
