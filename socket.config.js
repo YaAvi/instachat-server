@@ -1,58 +1,17 @@
 var socket = function (io, User) {
 	io.on('connection', function (socket) {
 		socket.on('message', function (data) {
+			var messageController = require('./controllers/messageController')(data, socket);
 			var fromUser;
 			var filter = {
 				email: data.from
 			};
-			User.findOne(filter, function (err, curentUser) {
-				for (var i = 0; i < curentUser.chats.length; i++) {
-					if (curentUser.chats[i].user.email === data.to) {
-						curentUser.chats[i].messages.push({
-							from: data.from,
-							message: data.msg
-						});
-						break;
-					}
-				}
-				fromUser = curentUser;
-	        	curentUser.save(function (err) {
-	        		//TODO
-	        	});
-			});
+			User.findOne(filter, messageController.message);
 
 			filter = {
 				email: data.to
 			};
-			User.findOne(filter, function (err, toUser) {
-				var i = 0
-				for (i ; i < toUser.chats.length; i++) {
-					if (toUser.chats[i].user.email === data.from) {
-						toUser.chats[i].messages.push({
-							from: data.from,
-							message: data.msg
-						});
-						break;
-					}
-				}
-				if (i === toUser.chats.length) {
-					fromUser.password = undefined;
-					var chat = {
-		                user: fromUser,
-		                messages: [{
-							from: data.from,
-							message: data.msg
-						}]
-	                };
-					toUser.chats.push(chat);
-					socket.broadcast.to(data.to).emit('new chat', {
-						chat: chat
-					});
-				}
-	        	toUser.save(function (err) {
-	        		//TODO
-	        	});
-			});
+			User.findOne(filter, messageController.message);
 			socket.broadcast.to(data.to).emit('message received', {
 				msg: {
 					from: data.from,
