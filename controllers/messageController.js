@@ -9,7 +9,7 @@ class messageController {
 	}
 
 	message(err, user) {
-		if(user.email === this.data.from) {
+		if (user.email === this.data.from) {
 			this.fromUser = user;
 			this.chatEmail = this.data.to;
 		} else {
@@ -27,18 +27,18 @@ class messageController {
 		});
 		if (i === user.chats.length) {
 			var chat = {
-	            user: this.fromUser.toJSON(),
-	            messages: [{
+				user: this.fromUser.toJSON(),
+				messages: [{
 					from: this.data.from,
 					message: this.data.msg
 				}]
-	        };
+			};
 			user.chats.push(chat);
 			socket.broadcast.to(this.data.to).emit('new chat', {
 				chat: chat
 			});
 		}
-		user.save(function (err) {
+		user.save(function(err) {
 			//TODO
 		});
 	}

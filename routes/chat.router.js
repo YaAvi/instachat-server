@@ -4,11 +4,11 @@ function chatRouter(User) {
 		chatsController = require('../controllers/chatsController'),
 		controller = new chatsController(User);
 
-	chatRouter.post('/chats', function (req, res) {
+	chatRouter.post('/chats', function(req, res) {
 		controller.addChat(req, res);
 	});
 
-	chatRouter.get('/chats/:userEmail', function (req, res) {
+	chatRouter.get('/chats/:userEmail', function(req, res) {
 		controller.getChats(req, res);
 	});
 

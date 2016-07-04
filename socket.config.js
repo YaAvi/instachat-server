@@ -1,6 +1,6 @@
-var socket = function (io, User) {
-	io.on('connection', function (socket) {
-		socket.on('message', function (data) {
+var socket = function(io, User) {
+	io.on('connection', function(socket) {
+		socket.on('message', function(data) {
 			var messageController = require('./controllers/messageController');
 			var controller = new messageController(data, socket);
 			var filter = {
@@ -20,10 +20,10 @@ var socket = function (io, User) {
 					time: Date.now()
 				}
 			});
-	  	});
-	  	socket.on('get room', function (data) {
-	  		socket.join(data.room);
-	  	});
+		});
+		socket.on('get room', function(data) {
+			socket.join(data.room);
+		});
 	});
 	return io;
 }
