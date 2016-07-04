@@ -1,9 +1,14 @@
-var signInController = function (User) {
-	var register = function (req, res) {
+'use strict';
+class userController { 
+	constructor(User) {
+		this.User = User;
+	}
+	
+	register(req, res) {
 		var filter = {
 			email: req.body.email
-		}
-		User.findOne(filter, function (err, user) {
+		};
+		this.User.findOne(filter, function (err, user) {
 			if (user) {
 				res.status(409).send('email already in system');
 			} else {
@@ -16,14 +21,14 @@ var signInController = function (User) {
 		});
 	}
 
-	var login = function (req, res) {
+	login(req, res) {
 		var filter = {
-			email: req.params.email
-		}
-		User.findOne(filter, function (err, user) {
+			email: req.body.email
+		};
+		this.User.findOne(filter, function (err, user) {
 			if (!user) {
 				res.status(404).send('email does not exist');
-			} else if (req.params.password !== user.password) {
+			} else if (req.body.password !== user.password) {
 				res.status(401).send('forgot your password, mate?');
 			} else {
 				user.password = undefined;
@@ -32,11 +37,11 @@ var signInController = function (User) {
 		});
 	}
 
-	var autoLogin = function (req, res) {
+	autoLogin(req, res) {
 		var filter = {
 			email: req.params.email
 		}
-		User.findOne(filter, function (err, user) {
+		this.User.findOne(filter, function (err, user) {
 			if (!user) {
 				res.status(404).send('email does not exist');
 			} else {
@@ -45,12 +50,6 @@ var signInController = function (User) {
 			}
 		});
 	}
-
-	return {
-		register: register,
-		login: login,
-		autoLogin: autoLogin
-	}
 }
 
-module.exports = signInController;
+module.exports = userController;

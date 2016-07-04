@@ -7,7 +7,7 @@ var db = mongoose.connect('mongodb://localhost:27017/chat-users');
 
 var chatRouter = require('./routes/chat.router')(User);
 
-var signInRouter = require('./routes/signIn.router')(User);
+var userRouter = require('./routes/user.router')(User);
 
 var app = express();
 
@@ -17,10 +17,10 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 app.use('/api/chat', chatRouter);
-app.use('/api/signIn', signInRouter);
+app.use('/api/user', userRouter);
 
 var server = app.listen(port, function () {
-	console.log("server running on port: " + port);
+	console.log('server running on port: ' + port);
 });
 
 var io = require('socket.io')(server),

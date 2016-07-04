@@ -1,45 +1,47 @@
-var messageController = function (data, socket) {
-	var fromUser, chatEmail;
-	var message = function (err, user) {
-		if(user.email === data.from) {
-			fromUser = user;
-			chatEmail = data.to;
+'use strict';
+var _ = require('lodash');
+class messageController {
+	constructor(data, socket) {
+		this.data = data;
+		this.socket = socket;
+		this.fromUser = '';
+		this.chatEmail = '';
+	}
+
+	message(err, user) {
+		if(user.email === this.data.from) {
+			this.fromUser = user;
+			this.chatEmail = this.data.to;
 		} else {
-			chatEmail = data.from;
+			this.chatEmail = this.data.from;
 		}
 		var i = 0
-		for (i ; i < user.chats.length; i++) {
-			if (user.chats[i].user.email === chatEmail) {
-				user.chats[i].messages.push({
-					from: data.from,
-					message: data.msg
-				});
-				break;
+		var chat = _.find(user.chats, {
+			user: {
+				email: this.chatEmail
 			}
-		}
+		});
+		chat.messages.push({
+			from: this.data.from,
+			message: this.data.msg
+		});
 		if (i === user.chats.length) {
 			var chat = {
-	            user: fromUser,
+	            user: this.fromUser.toJSON(),
 	            messages: [{
-					from: data.from,
-					message: data.msg
+					from: this.data.from,
+					message: this.data.msg
 				}]
 	        };
 			user.chats.push(chat);
-			socket.broadcast.to(data.to).emit('new chat', {
+			socket.broadcast.to(this.data.to).emit('new chat', {
 				chat: chat
 			});
 		}
 		user.save(function (err) {
-			fromUser.password = undefined;
+			//TODO
 		});
 	}
-
-	return {
-		message: message
-	}
 }
-
-
 
 module.exports = messageController;

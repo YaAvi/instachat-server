@@ -1,51 +1,55 @@
-var chatsController = function (User) {
-	var addChat = function (req, res) {
+'use strict';
+var q = require('q');
+class chatsController {
+	constructor(User) {
+		this.User = User
+	}
+		
+	findUserByEmail(email) {
 		var filter = {
-			email: req.body.email
+			email: email
 		};
-		User.findOne(filter, function (err, addUser) {
-			if (!addUser) {
-				res.status(404).send('email does not exist');
-			} else {
-				filter = {
-					email: req.body.myEmail
-				};
-				addUser.password = undefined;
-				User.findOne(filter, function (err, curentUser) {
-					if(curentUser.email === addUser.email) {
+		return this.User.findOne(filter);
+	}
+
+	addChat(req, res) {
+		var addUserPromise = this.findUserByEmail(req.body.email);
+		var curentUserPromise = this.findUserByEmail(req.body.myEmail);
+		var promises = [addUserPromise, curentUserPromise];
+		q.all(promises)
+			.then(function (results) {
+				var addUser = results[0];
+				var curentUser = results[1]; 
+				if (!addUser) {
+					res.status(404).send('email does not exist');
+				} else {
+					if(addUser.email === curentUser.email) {
 						res.status(404).send('cannot add your own email');
 						return;
 					}
 
 					curentUser.chats.push({
-	                    user: addUser,
-	                    messages: []
-                	});
-                	curentUser.save(function (err) {
-                		//TODO
-                	});
-                	res.status(201).send('chat added');
-				});
-			}
-		});
+		                user: addUser.toJSON(),
+		                messages: []
+		        	});
+		        	curentUser.save(function (err) {
+		        		if (!err) {
+		            		res.status(201).send('chat added');
+		        		}
+		        	});
+				}
+			})
 	}
 
-	var getChats = function (req, res) {
-		var filter = {
-			email: req.params.userEmail
-		};
-		User.findOne(filter, function (err, chatUser) {
-			if (!chatUser) {
-				res.status(404).send('email does not exist');
-			} else {
-				res.status(201).send(chatUser.chats);
-			}
-		});
-	}
-
-	return {
-		addChat: addChat,
-		getChats: getChats
+	getChats(req, res) {
+		this.findUserByEmail(req.params.userEmail)
+			.then(function (chatUser) {
+				if (!chatUser) {
+					res.status(404).send('email does not exist');
+				} else {
+					res.status(201).send(chatUser.chats);
+				}
+			});
 	}
 }
 

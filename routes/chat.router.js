@@ -1,13 +1,16 @@
 function chatRouter(User) {
 	var express = require('express'),
 		chatRouter = express.Router(),
-		chatsController = require('../controllers/chatsController')(User);
+		chatsController = require('../controllers/chatsController'),
+		controller = new chatsController(User);
 
-	chatRouter.route('/addChat')
-		.post(chatsController.addChat);
+	chatRouter.post('/chats', function (req, res) {
+		controller.addChat(req, res);
+	});
 
-	chatRouter.route('/getChats/:userEmail')
-		.get(chatsController.getChats);
+	chatRouter.get('/chats/:userEmail', function (req, res) {
+		controller.getChats(req, res);
+	});
 
 	return chatRouter;
 }
