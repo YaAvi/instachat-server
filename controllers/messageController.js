@@ -8,6 +8,10 @@ class messageController {
         this.chatEmail = '';
     }
 
+    isNewChat() {
+        return this.newChat;
+    }
+
     message(err, user) {
         if (user.email === this.data.from) {
             this.fromUser = user;
@@ -21,11 +25,15 @@ class messageController {
                 email: this.chatEmail
             }
         });
-        chat.messages.push({
-            from: this.data.from,
-            message: this.data.msg
-        });
+        if(chat) {
+            this.newChat = false;
+            chat.messages.push({
+                from: this.data.from,
+                message: this.data.msg
+            });
+        }
         if (i === user.chats.length) {
+            this.newChat = true;
             var chat = {
                 user: this.fromUser.toJSON(),
                 messages: [{
@@ -34,7 +42,7 @@ class messageController {
                 }]
             };
             user.chats.push(chat);
-            socket.broadcast.to(this.data.to).emit('new chat', {
+            this.socket.broadcast.to(this.data.to).emit('new chat', {
                 chat: chat
             });
         }

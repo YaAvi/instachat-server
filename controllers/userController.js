@@ -1,54 +1,69 @@
 'use strict';
+var q = require('q');
 class userController {
     constructor(User) {
         this.User = User;
     }
 
-    register(req, res) {
+    register(newUser) {
         var filter = {
-            email: req.body.email
+            email: newUser.email
         };
-        this.User.findOne(filter, function(err, user) {
-            if (user) {
-                res.status(409).send('email already in system');
-            } else {
-                var user = new User(req.body);
-                user.save(function(err, savedUser) {
-                    user.password = undefined;
-                    res.status(201).send(savedUser);
-                });
-            }
-        });
+        var promise;
+        return this.User.findOne(filter)
+            .then((user) => {
+                if (!user) {
+                    var createUser = new this.User(newUser);
+                    return createUser.save((err, savedUser) => {
+                        var returnUser = savedUser.toJSON(); 
+                        return q(returnUser);
+                    });
+                } else {
+                    return q.reject('email already in system');
+                }
+            });
     }
 
-    login(req, res) {
+    login(user) {
         var filter = {
-            email: req.body.email
+            email: user.email
         };
-        this.User.findOne(filter, function(err, user) {
-            if (!user) {
-                res.status(404).send('email does not exist');
-            } else if (req.body.password !== user.password) {
-                res.status(401).send('forgot your password, mate?');
-            } else {
-                user.password = undefined;
-                res.status(201).send(user);
-            }
-        });
+        var returnUser;
+        var reason;
+        return this.User.findOne(filter)
+            .then((dbUser) => {
+                returnUser = dbUser;
+                if (!returnUser) {
+                    reason = {
+                        msg: 'email does not exist',
+                        status: 404
+                    };
+                    return q.reject(reason);
+                }
+                if (user.password !== returnUser.password) {
+                    reason = {
+                        msg: 'forgot your password, mate?',
+                        status: 401
+                    };
+                    return q.reject(reason);
+                }
+                return q(returnUser);
+            });
     }
 
-    autoLogin(req, res) {
+    autoLogin(email) {
         var filter = {
-            email: req.params.email
-        }
-        this.User.findOne(filter, function(err, user) {
-            if (!user) {
-                res.status(404).send('email does not exist');
-            } else {
-                user.password = undefined;
-                res.status(201).send(user);
-            }
-        });
+            email: email
+        };
+        var returnUser;
+        return this.User.findOne(filter)
+            .then((dbUser) => {
+                returnUser = dbUser;
+                if (!returnUser) {
+                    return q.reject('email does not exist');
+                }
+                return q(returnUser);
+            });
     }
 }
 

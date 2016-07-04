@@ -12,42 +12,40 @@ class chatsController {
         return this.User.findOne(filter);
     }
 
-    addChat(req, res) {
-        var addUserPromise = this.findUserByEmail(req.body.email);
-        var curentUserPromise = this.findUserByEmail(req.body.myEmail);
+    addChat(addUserEmail, myEmail) {
+        var addUserPromise = this.findUserByEmail(addUserEmail);
+        var curentUserPromise = this.findUserByEmail(myEmail);
         var promises = [addUserPromise, curentUserPromise];
-        q.all(promises)
+        return q.all(promises)
             .then(function(results) {
                 var addUser = results[0];
                 var curentUser = results[1];
                 if (!addUser) {
-                    res.status(404).send('email does not exist');
-                } else {
-                    if (addUser.email === curentUser.email) {
-                        res.status(404).send('cannot add your own email');
-                        return;
-                    }
-
-                    curentUser.chats.push({
-                        user: addUser.toJSON(),
-                        messages: []
-                    });
-                    curentUser.save(function(err) {
-                        if (!err) {
-                            res.status(201).send('chat added');
-                        }
-                    });
+                    return q.reject('email does not exist');
                 }
+                if (addUser.email === curentUser.email) {
+                    return q.reject('cannot add your own email');
+                }
+
+                curentUser.chats.push({
+                    user: addUser.toJSON(),
+                    messages: []
+                });
+                return curentUser.save(function(err) {
+                    if (!err) {
+                        return q('chat added');
+                    }
+                });
             })
     }
 
-    getChats(req, res) {
-        this.findUserByEmail(req.params.userEmail)
+    getChats(email) {
+        return this.findUserByEmail(email)
             .then(function(chatUser) {
                 if (!chatUser) {
-                    res.status(404).send('email does not exist');
+                    return q.reject('email does not exist');
                 } else {
-                    res.status(201).send(chatUser.chats);
+                    return q(chatUser.chats);
                 }
             });
     }

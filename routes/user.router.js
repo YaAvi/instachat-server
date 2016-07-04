@@ -5,15 +5,33 @@ function userRouter(User) {
         controller = new userController(User);
 
     userRouter.post('/register', function(req, res) {
-        controller.register(req, res);
+        controller.register(req.body)
+            .then(function(user) {
+                res.status(201).send(user);
+            })
+            .catch(function(err) {
+                res.status(401).send(err);
+            });
     });
 
     userRouter.post('/login', function(req, res) {
-        controller.login(req, res);
+        controller.login(req.body)
+            .then(function(user) {
+                res.status(201).send(user);
+            })
+            .catch(function(err) {
+                res.status(err.status).send(err.msg);
+            });
     });
 
     userRouter.get('/login/:email', function(req, res) {
-        controller.autoLogin(req, res);
+        controller.autoLogin(req.params.email)
+            .then(function(user) {
+                res.status(201).send(user);
+            })
+            .catch(function(err) {
+                res.status(404).send(err);
+            });
     });
 
     return userRouter;
