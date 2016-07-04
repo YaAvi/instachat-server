@@ -31,18 +31,10 @@ class userController {
         return this.User.findOne(filter)
             .then((dbUser) => {
                 if (!dbUser) {
-                    reason = {
-                        msg: 'email does not exist',
-                        status: 404
-                    };
-                    return q.reject(reason);
+                    return q.reject('email does not exist');
                 }
                 if (user.password !== dbUser.password) {
-                    reason = {
-                        msg: 'forgot your password, mate?',
-                        status: 401
-                    };
-                    return q.reject(reason);
+                    return q.reject('forgot your password, mate?');
                 }
                 var returnUser = dbUser.toJSON(); 
                 return q(returnUser);

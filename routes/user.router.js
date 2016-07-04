@@ -20,7 +20,7 @@ function userRouter(User) {
                 res.status(201).send(user);
             })
             .catch(function(err) {
-                res.status(err.status).send(err.msg);
+                res.status(401).send(err);
             });
     });
 
@@ -30,7 +30,7 @@ function userRouter(User) {
                 res.status(201).send(user);
             })
             .catch(function(err) {
-                res.status(404).send(err);
+                res.status(401).send(err);
             });
     });
 
