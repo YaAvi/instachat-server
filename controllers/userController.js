@@ -9,7 +9,6 @@ class userController {
         var filter = {
             email: newUser.email
         };
-        var promise;
         return this.User.findOne(filter)
             .then((user) => {
                 if (!user) {
@@ -28,25 +27,24 @@ class userController {
         var filter = {
             email: user.email
         };
-        var returnUser;
         var reason;
         return this.User.findOne(filter)
             .then((dbUser) => {
-                returnUser = dbUser;
-                if (!returnUser) {
+                if (!dbUser) {
                     reason = {
                         msg: 'email does not exist',
                         status: 404
                     };
                     return q.reject(reason);
                 }
-                if (user.password !== returnUser.password) {
+                if (user.password !== dbUser.password) {
                     reason = {
                         msg: 'forgot your password, mate?',
                         status: 401
                     };
                     return q.reject(reason);
                 }
+                var returnUser = dbUser.toJSON(); 
                 return q(returnUser);
             });
     }
@@ -55,13 +53,12 @@ class userController {
         var filter = {
             email: email
         };
-        var returnUser;
         return this.User.findOne(filter)
             .then((dbUser) => {
-                returnUser = dbUser;
-                if (!returnUser) {
+                if (!dbUser) {
                     return q.reject('email does not exist');
                 }
+                var returnUser = dbUser.toJSON(); 
                 return q(returnUser);
             });
     }
