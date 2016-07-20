@@ -19,7 +19,6 @@ class messageController {
         } else {
             this.chatEmail = this.data.from;
         }
-        var i = 0
         var chat = _.find(user.chats, {
             user: {
                 email: this.chatEmail
@@ -32,7 +31,7 @@ class messageController {
                 message: this.data.msg
             });
         }
-        if (i === user.chats.length) {
+        if (!chat) {
             this.newChat = true;
             var chat = {
                 user: this.fromUser.toJSON(),
@@ -45,6 +44,7 @@ class messageController {
             this.socket.broadcast.to(this.data.to).emit('new chat', {
                 chat: chat
             });
+            console.log("new chat");
         }
         user.save(function(err) {
             //TODO

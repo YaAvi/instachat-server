@@ -3,7 +3,7 @@ var express = require('express'),
     bodyParser = require('body-parser'),
     User = require('./models/user.model');
 
-var db = mongoose.connect('mongodb://localhost:27017/chat-users');
+var db = mongoose.connect('mongodb://admin:87713775AY@ds023315.mlab.com:23315/insta-chat');
 
 var chatRouter = require('./routes/chat.router')(User);
 

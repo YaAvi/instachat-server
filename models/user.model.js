@@ -27,7 +27,10 @@ var userSchema = new Schema({
         first: String,
         last: String
     },
-    email: String,
+    email: {
+        type:String,
+        index: true
+    },
     password: String,
     chats: [chatSchema]
 });
