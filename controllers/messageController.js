@@ -33,6 +33,7 @@ class messageController {
         }
         if (!chat) {
             this.newChat = true;
+            console.log(this.fromUser);
             var chat = {
                 user: this.fromUser.toJSON(),
                 messages: [{
@@ -42,9 +43,8 @@ class messageController {
             };
             user.chats.push(chat);
             this.socket.broadcast.to(this.data.to).emit('new chat', {
-                chat: chat
+                from: this.data.from
             });
-            console.log("new chat");
         }
         user.save(function(err) {
             //TODO

@@ -3,16 +3,10 @@ var socket = function(io, User) {
         socket.on('message', function(data) {
             var messageController = require('./controllers/messageController');
             var controller = new messageController(data, socket);
-            var filter = {
-                email: data.from
-            };
-            User.findOne(filter, controller.message.bind(controller));
+            
+            User.findOne({email: data.from}, controller.message.bind(controller));
 
-            filter = {
-                email: data.to
-            };
-
-            User.findOne(filter, controller.message.bind(controller));
+            User.findOne({email: data.to}, controller.message.bind(controller));
             socket.broadcast.to(data.to).emit('message received', {
                 msg: {
                     from: data.from,

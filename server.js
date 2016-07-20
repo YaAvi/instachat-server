@@ -18,7 +18,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
-app.use('/api/chat', chatRouter);
+app.use('/api/chats', chatRouter);
 app.use('/api/user', userRouter);
 
 var server = app.listen(port, function() {

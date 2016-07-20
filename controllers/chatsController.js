@@ -49,6 +49,22 @@ class chatsController {
                 }
             });
     }
+
+    getChat(email, chatEmail) {
+        return this.findUserByEmail(email)
+            .then(function(chatUser) {
+                if (!chatUser) {
+                    return q.reject('email does not exist');
+                } else {
+                    var chat = _.find(user.chats, {
+                        user: {
+                            email: chatEmail
+                        }
+                    });
+                    return q(chat);
+                }
+            });
+    }
 }
 
 module.exports = chatsController;
