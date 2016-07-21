@@ -1,5 +1,6 @@
 'use strict';
 var q = require('q');
+var _ = require('lodash');
 class chatsController {
     constructor(User) {
         this.User = User
@@ -56,7 +57,7 @@ class chatsController {
                 if (!chatUser) {
                     return q.reject('email does not exist');
                 } else {
-                    var chat = _.find(user.chats, {
+                    var chat = _.find(chatUser.chats, {
                         user: {
                             email: chatEmail
                         }

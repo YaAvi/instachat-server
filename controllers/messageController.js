@@ -33,7 +33,6 @@ class messageController {
         }
         if (!chat) {
             this.newChat = true;
-            console.log(this.fromUser);
             var chat = {
                 user: this.fromUser.toJSON(),
                 messages: [{
