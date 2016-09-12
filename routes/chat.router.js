@@ -25,14 +25,11 @@ function chatRouter(User) {
     });
 
     chatRouter.get('/:userEmail/:chatEmail', function(req, res) {
-        console.log("chat!@#!@#!@$");
         controller.getChat(req.params.userEmail, req.params.chatEmail)
             .then(function(chat) {
-                console.log(chat);
                 res.status(201).send(chat);
             })
             .catch(function(err) {
-                console.log(err);
                 res.status(404).send(err);
             });
     });

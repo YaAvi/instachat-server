@@ -62,7 +62,10 @@ class chatsController {
                             email: chatEmail
                         }
                     });
-                    return q(chat);
+                    return this.User.findOne({email: email}, chats: {$elemMatch: {user: {email: chatEmail}}}).then(function(chat) {
+                        return q(chat);
+                    })
+                    //return q(chat);
                 }
             });
     }
