@@ -10,7 +10,7 @@ class chatsController {
         var filter = {
             email: email
         };
-        return this.User.findOne(filter);
+        return this.User.findOne(filter).where('chats.messages').slice(-30);
     }
 
     addChat(addUserEmail, myEmail) {
@@ -46,6 +46,7 @@ class chatsController {
                 if (!chatUser) {
                     return q.reject('email does not exist');
                 } else {
+                    console.log(chatUser.chats);
                     return q(chatUser.chats);
                 }
             });
@@ -62,10 +63,7 @@ class chatsController {
                             email: chatEmail
                         }
                     });
-                    return this.User.findOne({email: email}, chats: {$elemMatch: {user: {email: chatEmail}}}).then(function(chat) {
-                        return q(chat);
-                    })
-                    //return q(chat);
+                    return q(chat);
                 }
             });
     }
